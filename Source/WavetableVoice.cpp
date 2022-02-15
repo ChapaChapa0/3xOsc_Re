@@ -102,7 +102,7 @@ inline void WavetableVoice::processBlock(juce::AudioBuffer<FloatType>& outputBuf
 
                 currentSample_i = (float)(value0 + frac * (value1 - value0)) * levelMidiNote * (levelOsc[i] / 100.0f) * ((tailOff > 0.0) ? tailOff : 1.0);
 
-                float updatedTableDelta = tableDelta[i] * pow(10.0, ((double)coarseOsc[i] * 100 + (double)fineOsc[i]) / (2400 * 3.322038403));
+                float updatedTableDelta = tableDelta[i] * pow(10.0, ((double)coarseOsc[i] * 100 + (double)fineOsc[i]) / (1200 * 3.322038403));
                 if ((currentIndex[i] += updatedTableDelta) > (float)NUM_SAMPLES)
                     currentIndex[i] -= (float)NUM_SAMPLES;
             }

@@ -102,7 +102,7 @@ private:
     juce::Array<float> wavetableButtonsOsc3 = { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     int wavetableOsc[3] = { 0, 0, 0 };
 
-    double levelMidiNote = 0.0, tailOff = 0.0;
+    double levelMidiNote = 0.0, tailOff = 0.0, attackEnvelop = 0.0f;;
     juce::AudioProcessorValueTreeState* params;
     juce::AudioSampleBuffer wavetables;
 };

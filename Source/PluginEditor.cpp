@@ -9,6 +9,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "PluginLook.h"
+#include "PageButton.h"
 
 //==============================================================================
 _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProcessor& p, juce::AudioProcessorValueTreeState& vts)
@@ -30,8 +31,6 @@ _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProc
     rotarySliders[0].setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::black);
     rotarySliders[0].setBounds(825, 45, 100, 100);
     rotarySliders[0].addListener(this);
-    addAndMakeVisible(rotarySliders[0]);
-    addAndMakeVisible(labels[0]);
 
     // Set the mix level sliders for oscillator 2 and 3
     for (int i = 1; i < 3; ++i)
@@ -48,8 +47,6 @@ _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProc
         rotarySliders[i].setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::black);
         rotarySliders[i].setBounds(825, 185 + i * 140, 100, 100);
         rotarySliders[i].addListener(this);
-        addAndMakeVisible(rotarySliders[i]);
-        addAndMakeVisible(labels[i]);
     }
 
     // Set the coarse pitch, fine pitch and panning sliders for the 3 oscillators
@@ -69,8 +66,6 @@ _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProc
         rotarySliders[i + 3].setColour(juce::Slider::thumbColourId, juce::Colours::limegreen);
         rotarySliders[i + 3].setBounds(525, 185 + i * 140, 100, 100);
         rotarySliders[i + 3].addListener(this);
-        addAndMakeVisible(rotarySliders[i + 3]);
-        addAndMakeVisible(labels[i + 3]);
 
         // Fine pitch
         sliderAttachments[i + 6].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "fineOsc" + juce::String(i + 1), rotarySliders[i + 6]));
@@ -86,8 +81,6 @@ _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProc
         rotarySliders[i + 6].setColour(juce::Slider::thumbColourId, juce::Colours::limegreen);
         rotarySliders[i + 6].setBounds(625, 185 + i * 140, 100, 100);
         rotarySliders[i + 6].addListener(this);
-        addAndMakeVisible(rotarySliders[i + 6]);
-        addAndMakeVisible(labels[i + 6]);
 
         // Panning
         sliderAttachments[i + 9].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "panOsc" + juce::String(i + 1), panSliders[i]));
@@ -99,8 +92,6 @@ _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProc
         panSliders[i].setTextBoxIsEditable(false);
         panSliders[i].setBounds(725, 185 + i * 140, 100, 100);
         panSliders[i].addListener(this);
-        addAndMakeVisible(panSliders[i]);
-        addAndMakeVisible(labels[i + 9]);
     }
 
     // Set stereo detune and stereo phase offset sliders for the 3 oscillators
@@ -116,8 +107,6 @@ _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProc
         offsetSliders[i].setTextBoxIsEditable(false);
         offsetSliders[i].setBounds(325, 185 + i * 140, 80, 100);
         offsetSliders[i].addListener(this);
-        addAndMakeVisible(offsetSliders[i]);
-        addAndMakeVisible(labels[i + 12]);
 
         // Stereo detune
         sliderAttachments[i + 15].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "stereoDetuneOsc" + juce::String(i + 1), detuneSliders[i]));
@@ -129,8 +118,6 @@ _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProc
         detuneSliders[i].setTextBoxIsEditable(false);
         detuneSliders[i].setBounds(425, 185 + i * 140, 80, 100);
         detuneSliders[i].addListener(this);
-        addAndMakeVisible(detuneSliders[i]);
-        addAndMakeVisible(labels[i + 15]);
     }
 
     // Set the wavetable radio buttons for the 3 oscillators
@@ -147,7 +134,6 @@ _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProc
             wavetableButtons[i * 6 + j].setRadioGroupId(i + 1, juce::NotificationType::sendNotification);
             wavetableButtons[i * 6 + j].addListener(this);
             wavetableButtons[i * 6 + j].setBounds(100 + int(j % 3) * 60 , 175 + int(j / 3) * 60 + i * 140, 50, 50);
-            addAndMakeVisible(wavetableButtons[i * 6 + j]);
         }
 
         wavetableButtons[i * 6].setToggleState(true, juce::NotificationType::sendNotification);
@@ -161,8 +147,19 @@ _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProc
         oscLabels[i].setColour(juce::Label::outlineColourId, blazeorange);
         oscLabels[i].setColour(juce::Label::textColourId, blazeorange);
         oscLabels[i].setBounds(25, 205 + i * 140, 50, 50);
-        addAndMakeVisible(oscLabels[i]);
     }
+
+    // Set page buttons
+    pagesButton[0].setBounds(45, 45, 100, 100);
+    pagesButton[0].setRadioGroupId(1000);
+    pagesButton[0].onClick = [this] { updateToggleState(&pagesButton[0], "Main");   };
+
+    pagesButton[1].setBounds(145, 45, 100, 100);
+    pagesButton[1].setRadioGroupId(1000);
+    pagesButton[1].onClick = [this] { updateToggleState(&pagesButton[1], "Second"); };
+
+    // Make visible components of the main page
+    makeMainPageVisible();
 
     // Set size of the main window
     setSize (950, 620);
@@ -176,13 +173,67 @@ _3xOsc_ReAudioProcessorEditor::~_3xOsc_ReAudioProcessorEditor()
 }
 
 //==============================================================================
+
+void _3xOsc_ReAudioProcessorEditor::makeMainPageVisible()
+{
+
+    // Hide Second Page
+    for (int i = 0; i < getNumChildComponents(); ++i)
+    {
+        removeChildComponent(i);
+    }
+
+    // Make Main Page Visible
+    //addAndMakeVisible(pagesButton[0]);
+    //addAndMakeVisible(pagesButton[1]);
+
+    for (int i = 0; i < 18; ++i)
+    {
+        addAndMakeVisible(wavetableButtons[i]);
+        addAndMakeVisible(labels[i]);
+    }
+
+    for (int i = 0; i < 9; ++i)
+    {
+        addAndMakeVisible(rotarySliders[i]);
+    }
+
+    for (int i = 0; i < 3; ++i)
+    {
+        addAndMakeVisible(offsetSliders[i]);
+        addAndMakeVisible(detuneSliders[i]);
+        addAndMakeVisible(panSliders[i]);
+        addAndMakeVisible(oscLabels[i]);
+    }
+}
+
+void _3xOsc_ReAudioProcessorEditor::makeSecondPageVisible()
+{
+
+    // Hide Main Page
+    for (int i = 0; i < getNumChildComponents(); ++i)
+    {
+        removeChildComponent(i);
+    }
+
+    // Make Second Page Visible
+    //addAndMakeVisible(pagesButton[0]);
+    //addAndMakeVisible(pagesButton[1]);
+
+    addAndMakeVisible(rotarySliders[0]);
+    addAndMakeVisible(labels[0]);
+}
+
+//==============================================================================
 void _3xOsc_ReAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     //g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
     g.fillAll(slategray);
 
-    g.setColour (juce::Colours::black);
+    juce::Rectangle<int> area(0, 0, getWidth(), 160);
+    g.setColour(juce::Colours::darkslategrey);
+    g.fillRect(area);
     g.setFont (15.0f);
 }
 
@@ -205,4 +256,17 @@ void _3xOsc_ReAudioProcessorEditor::buttonClicked(juce::Button* button)
 void _3xOsc_ReAudioProcessorEditor::buttonStateChanged(juce::Button* button)
 {
     audioProcessor.updateValue();
+}
+
+void _3xOsc_ReAudioProcessorEditor::updateToggleState(juce::Button* button, juce::String name)
+{
+    auto state = button->getToggleState();
+    if (name == "Main" && state)
+    {
+        //makeMainPageVisible();
+    }
+    else if (name == "Second" && state)
+    {
+        //makeSecondPageVisible();
+    }
 }

@@ -16,7 +16,6 @@ class WavetableButton : public juce::ImageButton
 public:
     WavetableButton();
     void setWavetable(int);
-    void setOnOff(bool);
 
     juce::Image imageOn[6] =
     {

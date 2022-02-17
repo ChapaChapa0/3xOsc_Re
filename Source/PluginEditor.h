@@ -14,6 +14,7 @@
 #include "PanSlider.h"
 #include "StereoSlider.h"
 #include "WavetableButton.h"
+#include "PageButton.h"
 
 //==============================================================================
 /**
@@ -30,6 +31,10 @@ public:
     virtual void sliderValueChanged(juce::Slider* slider) override;
     virtual void buttonClicked(juce::Button* button) override;
     virtual void buttonStateChanged(juce::Button* button) override;
+    void updateToggleState(juce::Button* button, juce::String name);
+
+    void makeMainPageVisible();
+    void makeSecondPageVisible();
 
     juce::Colour blazeorange = juce::Colour(255, 130, 0);
     juce::Colour coolgray = juce:: Colour(140, 146, 172);
@@ -43,12 +48,17 @@ private:
     juce::MidiKeyboardComponent keyboardComponent;
 
     WavetableButton wavetableButtons[18];
-    StereoOffsetSlider offsetSliders[3];
-    StereoDetuneSlider detuneSliders[3];
+    PageButton pagesButton[2];
+
     juce::Slider rotarySliders[9];
     PanSlider panSliders[3];
+    
+    StereoOffsetSlider offsetSliders[3];
+    StereoDetuneSlider detuneSliders[3];
+
     juce::Label labels[18];
     juce::Label oscLabels[3];
+
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> sliderAttachments[18];
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> buttonAttachments[18];
 

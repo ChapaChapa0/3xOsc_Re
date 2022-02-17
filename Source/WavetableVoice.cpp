@@ -26,7 +26,8 @@ bool WavetableVoice::canPlaySound(juce::SynthesiserSound* sound)
 
 void WavetableVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound* sound, int currentPitchWheelPosition)
 {
-    levelMidiNote = velocity * 0.8;
+    levelMidiNote = velocity * 0.5;
+    attackEnvelop = 0.0;
     tailOff = 0.0;
 
     auto cyclesPerSecond = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
@@ -52,7 +53,7 @@ void WavetableVoice::startNote(int midiNoteNumber, float velocity, juce::Synthes
 
 void WavetableVoice::stopNote(float velocity, bool allowTailOff)
 {
-    if (allowTailOff)
+    if (true)
     {
         if (tailOff == 0.0) tailOff = 1.0;
     }
@@ -85,6 +86,11 @@ inline void WavetableVoice::processBlock(juce::AudioBuffer<FloatType>& outputBuf
 {
     while (--numSamples >= 0)
     {
+        if (attackEnvelop < 1.0)
+            attackEnvelop = 1.0 - ((1.0 - attackEnvelop) * 0.99) + 0.001;
+        else
+            attackEnvelop = 1.0;
+
         float currentSampleLeft = 0.0f;
         float currentSampleRight = 0.0f;
 
@@ -96,7 +102,7 @@ inline void WavetableVoice::processBlock(juce::AudioBuffer<FloatType>& outputBuf
             if (wavetableOsc[i] == 5)
             {
 
-                currentSampleLeft_i = (random.nextFloat() - 0.5f) * levelMidiNote * (levelOsc[i] / 100.0f) * ((tailOff > 0.0) ? tailOff : 1.0);
+                currentSampleLeft_i = (random.nextFloat() - 0.5f) * levelMidiNote * (levelOsc[i] / 100.0f) * attackEnvelop * ((tailOff > 0.0) ? tailOff : 1.0);
                 currentSampleRight_i = currentSampleLeft_i;
             }
             
@@ -113,7 +119,7 @@ inline void WavetableVoice::processBlock(juce::AudioBuffer<FloatType>& outputBuf
                 auto valueL0 = table[indexL0];
                 auto valueL1 = table[indexL1];
 
-                currentSampleLeft_i = (float)(valueL0 + fracL * (valueL1 - valueL0)) * levelMidiNote * (levelOsc[i] / 100.0f) * ((tailOff > 0.0) ? tailOff : 1.0);
+                currentSampleLeft_i = (float)(valueL0 + fracL * (valueL1 - valueL0)) * levelMidiNote * (levelOsc[i] / 100.0f) * attackEnvelop * ((tailOff > 0.0) ? tailOff : 1.0);
 
                 float updatedTableDeltaL = tableDelta[i] * pow(10.0, ((coarseOsc[i] - 12.0) * 100.0 + fineOsc[i]) / (1200.0 * 3.322038403));
                 if ((currentIndex[i] += updatedTableDeltaL) > (float)NUM_SAMPLES)
@@ -128,7 +134,7 @@ inline void WavetableVoice::processBlock(juce::AudioBuffer<FloatType>& outputBuf
                 auto valueR0 = table[indexR0];
                 auto valueR1 = table[indexR1];
 
-                currentSampleRight_i = (float)(valueR0 + fracR * (valueR1 - valueR0)) * levelMidiNote * (levelOsc[i] / 100.0f) * ((tailOff > 0.0) ? tailOff : 1.0);
+                currentSampleRight_i = (float)(valueR0 + fracR * (valueR1 - valueR0)) * levelMidiNote * (levelOsc[i] / 100.0f) * attackEnvelop *((tailOff > 0.0) ? tailOff : 1.0);
 
                 float updatedTableDeltaR = tableDelta[i] * pow(10.0, ((coarseOsc[i] - 12.0) * 100.0 + fineOsc[i] + stereoDetuneOsc[i]) / (1200.0 * 3.322038403));
                 if ((currentIndex[i + 3] += updatedTableDeltaR) > (float)NUM_SAMPLES)
@@ -149,7 +155,7 @@ inline void WavetableVoice::processBlock(juce::AudioBuffer<FloatType>& outputBuf
 
         if (tailOff > 0.0) 
         {
-            tailOff *= 0.99;
+            tailOff *= 0.995;
             if (tailOff <= 0.005) 
             {
                 break;

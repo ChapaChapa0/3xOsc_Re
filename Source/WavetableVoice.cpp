@@ -10,8 +10,10 @@
 
 #include "WavetableVoice.h"
 #include "WavetableSound.h"
+using namespace std;
 
 #define NUM_SAMPLES 512
+
 
 WavetableVoice::WavetableVoice(juce::AudioProcessorValueTreeState& args) : params(&args) {
     generateWavetables();
@@ -24,19 +26,26 @@ bool WavetableVoice::canPlaySound(juce::SynthesiserSound* sound)
 
 void WavetableVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound* sound, int currentPitchWheelPosition)
 {
-    levelMidiNote = velocity * 0.2;
-    currentIndex[0] = 0.0f;
-    currentIndex[1] = 0.0f;
-    currentIndex[2] = 0.0f;
+    levelMidiNote = velocity * 0.8;
     tailOff = 0.0;
 
     auto cyclesPerSecond = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
+    auto cyclesPerSample = cyclesPerSecond / getSampleRate();
+    auto samplesPerCycle = 1.0 / cyclesPerSample;
+
     auto tableSizeOverSampleRate = (float)NUM_SAMPLES / getSampleRate();
     auto tableDeltaInit = cyclesPerSecond * tableSizeOverSampleRate;
 
-    tableDelta[0] = tableDeltaInit;
-    tableDelta[1] = tableDeltaInit;
-    tableDelta[2] = tableDeltaInit;
+    for (int i = 0; i < 3; ++i)
+    {
+        // Left
+        currentIndex[i] = ((stereoOffsetOsc[i] < 0) ? abs(stereoOffsetOsc[i]) : 0.0) / 100.0 * samplesPerCycle;
+        tableDelta[i] = tableDeltaInit;
+
+        // Right
+        currentIndex[i + 3] = ((stereoOffsetOsc[i] > 0) ? stereoOffsetOsc[i] : 0.0) / 100.0 * samplesPerCycle;
+        tableDelta[i + 3] = tableDeltaInit;
+    }
 
     updateValue();
 }
@@ -74,7 +83,6 @@ void WavetableVoice::renderNextBlock(juce::AudioBuffer<double>& outputBuffer, in
 template<typename FloatType>
 inline void WavetableVoice::processBlock(juce::AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
 {
-
     while (--numSamples >= 0)
     {
         float currentSampleLeft = 0.0f;
@@ -82,36 +90,56 @@ inline void WavetableVoice::processBlock(juce::AudioBuffer<FloatType>& outputBuf
 
         for (int i = 0; i < 3; ++i)
         {
-            float currentSample_i;
+            float currentSampleLeft_i;
+            float currentSampleRight_i;
 
-            if (wavetableOsc[i] == 4)
+            if (wavetableOsc[i] == 5)
             {
-                currentSample_i = (random.nextFloat() - 0.5f) * levelMidiNote * (levelOsc[i] / 100.0f) * ((tailOff > 0.0) ? tailOff : 1.0);
+
+                currentSampleLeft_i = (random.nextFloat() - 0.5f) * levelMidiNote * (levelOsc[i] / 100.0f) * ((tailOff > 0.0) ? tailOff : 1.0);
+                currentSampleRight_i = currentSampleLeft_i;
             }
             
             else
             {
-                auto index0 = (unsigned int)currentIndex[i];
-                auto index1 = index0 == (NUM_SAMPLES - 1) ? (unsigned int)0 : index0 + 1;
-
-                auto frac = currentIndex[i] - (float)index0;
-
                 auto* table = wavetables.getReadPointer(wavetableOsc[i]);
-                auto value0 = table[index0];
-                auto value1 = table[index1];
 
-                currentSample_i = (float)(value0 + frac * (value1 - value0)) * levelMidiNote * (levelOsc[i] / 100.0f) * ((tailOff > 0.0) ? tailOff : 1.0);
+                // Left
+                auto indexL0 = (unsigned int)currentIndex[i];
+                auto indexL1 = indexL0 == (NUM_SAMPLES - 1) ? (unsigned int)0 : indexL0 + 1;
 
-                float updatedTableDelta = tableDelta[i] * pow(10.0, ((double)coarseOsc[i] * 100 + (double)fineOsc[i]) / (1200 * 3.322038403));
-                if ((currentIndex[i] += updatedTableDelta) > (float)NUM_SAMPLES)
+                auto fracL = currentIndex[i] - (float)indexL0;
+                
+                auto valueL0 = table[indexL0];
+                auto valueL1 = table[indexL1];
+
+                currentSampleLeft_i = (float)(valueL0 + fracL * (valueL1 - valueL0)) * levelMidiNote * (levelOsc[i] / 100.0f) * ((tailOff > 0.0) ? tailOff : 1.0);
+
+                float updatedTableDeltaL = tableDelta[i] * pow(10.0, ((coarseOsc[i] - 12.0) * 100.0 + fineOsc[i]) / (1200.0 * 3.322038403));
+                if ((currentIndex[i] += updatedTableDeltaL) > (float)NUM_SAMPLES)
                     currentIndex[i] -= (float)NUM_SAMPLES;
+
+                // Right
+                auto indexR0 = (unsigned int)currentIndex[i + 3];
+                auto indexR1 = indexR0 == (NUM_SAMPLES - 1) ? (unsigned int)0 : indexR0 + 1;
+
+                auto fracR = currentIndex[i + 3] - (float)indexR0;
+
+                auto valueR0 = table[indexR0];
+                auto valueR1 = table[indexR1];
+
+                currentSampleRight_i = (float)(valueR0 + fracR * (valueR1 - valueR0)) * levelMidiNote * (levelOsc[i] / 100.0f) * ((tailOff > 0.0) ? tailOff : 1.0);
+
+                float updatedTableDeltaR = tableDelta[i] * pow(10.0, ((coarseOsc[i] - 12.0) * 100.0 + fineOsc[i] + stereoDetuneOsc[i]) / (1200.0 * 3.322038403));
+                if ((currentIndex[i + 3] += updatedTableDeltaR) > (float)NUM_SAMPLES)
+                    currentIndex[i + 3] -= (float)NUM_SAMPLES;
             }
 
             float leftOsc_i = abs(panOsc[i] - 100.0f) / 200.0f;
             float rightOsc_i = abs(panOsc[i] + 100.0f) / 200.0f;
 
-            currentSampleLeft += currentSample_i * leftOsc_i;
-            currentSampleRight += currentSample_i * rightOsc_i;
+            currentSampleLeft += currentSampleLeft_i * leftOsc_i;
+            currentSampleRight += currentSampleRight_i * rightOsc_i;
         }
 
         for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
@@ -138,33 +166,31 @@ void WavetableVoice::updateValue()
     levelOsc[1] = *(params->getRawParameterValue(strs[1]));
     levelOsc[2] = *(params->getRawParameterValue(strs[2]));
 
-    coarseOsc[0] = *(params->getRawParameterValue(strs[3]));
-    coarseOsc[1] = *(params->getRawParameterValue(strs[4]));
-    coarseOsc[2] = *(params->getRawParameterValue(strs[5]));
+    for (int i = 0; i < 3; ++i)
+    {
+        coarseOsc[i] = *(params->getRawParameterValue(strs[i + 3]));
+        fineOsc[i] = *(params->getRawParameterValue(strs[i + 6]));
+        panOsc[i] = *(params->getRawParameterValue(strs[i + 9]));
 
-    fineOsc[0] = *(params->getRawParameterValue(strs[6]));
-    fineOsc[1] = *(params->getRawParameterValue(strs[7]));
-    fineOsc[2] = *(params->getRawParameterValue(strs[8]));
+        stereoOffsetOsc[i] = *(params->getRawParameterValue(strs[i + 12]));
+        stereoDetuneOsc[i] = *(params->getRawParameterValue(strs[i + 15]));
+    }
 
-    panOsc[0] = *(params->getRawParameterValue(strs[9]));
-    panOsc[1] = *(params->getRawParameterValue(strs[10]));
-    panOsc[2] = *(params->getRawParameterValue(strs[11]));
+    for (int j = 0; j < 6; ++j)
+    {
+        auto parameterOsc1 = params->getRawParameterValue(strs[j + 18]);
+        auto parameterOsc2 = params->getRawParameterValue(strs[j + 24]);
+        auto parameterOsc3 = params->getRawParameterValue(strs[j + 30]);
 
-    //float retval = 0.0;
-
-    //auto* samplesToWrite = wavetable.getWritePointer(0);
-    //auto* samplesToRead = allWavetables.getReadPointer(0);
-
-    //for (int p = 0; p < NUM_SAMPLES; p++) 
-    //{
-    //    retval = samplesToRead[p];
-    //    samplesToWrite[p] = retval;
-    //}
+        if (*parameterOsc1 > 0.5f) wavetableOsc[0] = j;
+        if (*parameterOsc2 > 0.5f) wavetableOsc[1] = j;
+        if (*parameterOsc3 > 0.5f) wavetableOsc[2] = j;
+    }
 }
 
 void WavetableVoice::generateWavetables()
 {
-    wavetables.setSize(4, (int)NUM_SAMPLES);
+    wavetables.setSize(5, (int)NUM_SAMPLES);
     wavetables.clear();
 
     juce::Array<juce::Array<int>> harmonics;
@@ -174,13 +200,17 @@ void WavetableVoice::generateWavetables()
     harmonics.add({ 1 });
     harmonicsWeights.add({ 1.0f });
 
-    // Triangle Table
-    harmonics.add({ 1, 3, 5, 7, 9, 11, 13 });
-    harmonicsWeights.add({ 1.0f, 0.111f, 0.04f, 0.02f, 0.012f, 0.0082f, 0.0059f });
-
     // Square Table
     harmonics.add({ 1, 3, 5, 7, 9, 11, 13 });
     harmonicsWeights.add({ 1.0f, 0.333f, 0.2f, 0.142f, 0.111f, 0.091f, 0.077f });
+
+    // RoundSaw Table
+    harmonics.add({ 1, 3, 5, 7, 9, 11, 13 });
+    harmonicsWeights.add({ 1.0f, 0.333f, 0.2f, 0.142f, 0.111f, 0.091f, 0.077f });
+
+    // Triangle Table
+    harmonics.add({ 1, 3, 5, 7, 9, 11, 13 });
+    harmonicsWeights.add({ 1.0f, 0.111f, 0.04f, 0.02f, 0.012f, 0.0082f, 0.0059f });
 
     // Sawtooth Table
     harmonics.add({ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 });

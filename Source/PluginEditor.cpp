@@ -17,80 +17,155 @@ _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProc
     // Set customized look
     setLookAndFeel(&threeOscLook);
 
-    // Set the sliders
-    attachments[0].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "masterVolume", sliders[0]));
+    // Set the main volume slider
+    sliderAttachments[0].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "masterVolume", rotarySliders[0]));
     labels[0].setText("Master Volume", juce::NotificationType::dontSendNotification);
-    sliders[0].setTextValueSuffix("%");
+    rotarySliders[0].setTextValueSuffix("%");
 
-    labels[0].attachToComponent(&(sliders[0]), false);
-    sliders[0].setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
-    sliders[0].setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 75, 30);
-    sliders[0].setBounds(425, 45, 100, 100);
-    sliders[0].addListener(this);
-    addAndMakeVisible(sliders[0]);
+    labels[0].attachToComponent(&(rotarySliders[0]), false);
+    rotarySliders[0].setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+    rotarySliders[0].setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 75, 30);
+    rotarySliders[0].setTextBoxIsEditable(false);
+    rotarySliders[0].setColour(juce::Slider::textBoxTextColourId, juce::Colours::black);
+    rotarySliders[0].setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::black);
+    rotarySliders[0].setBounds(825, 45, 100, 100);
+    rotarySliders[0].addListener(this);
+    addAndMakeVisible(rotarySliders[0]);
     addAndMakeVisible(labels[0]);
 
+    // Set the mix level sliders for oscillator 2 and 3
     for (int i = 1; i < 3; ++i)
     {
-        attachments[i].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "levelOsc" + juce::String(i + 1), sliders[i]));
-        labels[i].setText("Level Osc "+ juce::String(i + 1), juce::NotificationType::dontSendNotification);
-        sliders[i].setTextValueSuffix("%");
-    }
+        sliderAttachments[i].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "levelOsc" + juce::String(i + 1), rotarySliders[i]));
+        labels[i].setText("Mix Level", juce::NotificationType::dontSendNotification);
+        rotarySliders[i].setTextValueSuffix("%");
 
-    for (int i = 1; i < 3; ++i)
-    {
-        labels[i].attachToComponent(&(sliders[i]), false);
-        sliders[i].setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
-        sliders[i].setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 75, 30);
-        sliders[i].setBounds(425, 185 + (i * 140), 100, 100);
-        sliders[i].addListener(this);
-        addAndMakeVisible(sliders[i]);
+        labels[i].attachToComponent(&(rotarySliders[i]), false);
+        rotarySliders[i].setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+        rotarySliders[i].setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 75, 30);
+        rotarySliders[i].setTextBoxIsEditable(false);
+        rotarySliders[i].setColour(juce::Slider::textBoxTextColourId, juce::Colours::black);
+        rotarySliders[i].setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::black);
+        rotarySliders[i].setBounds(825, 185 + i * 140, 100, 100);
+        rotarySliders[i].addListener(this);
+        addAndMakeVisible(rotarySliders[i]);
         addAndMakeVisible(labels[i]);
     }
 
+    // Set the coarse pitch, fine pitch and panning sliders for the 3 oscillators
     for (int i = 0; i < 3; ++i)
     {
-        attachments[i + 3].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "coarseOsc" + juce::String(i + 1), sliders[i + 3]));
+        // Coarse pitch
+        sliderAttachments[i + 3].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "coarseOsc" + juce::String(i + 1), rotarySliders[i + 3]));
         labels[i + 3].setText("Coarse Pitch", juce::NotificationType::dontSendNotification);
-        sliders[i + 3].setTextValueSuffix(" sts");
+        rotarySliders[i + 3].setTextValueSuffix(" sts");
 
-        attachments[i + 6].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "fineOsc" + juce::String(i + 1), sliders[i + 6]));
-        labels[i + 6].setText("Fine Pitch", juce::NotificationType::dontSendNotification);
-        sliders[i + 6].setTextValueSuffix(" cts");
-
-        attachments[i + 9].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "panOsc" + juce::String(i + 1), panSliders[i]));
-        labels[i + 9].setText("Panning", juce::NotificationType::dontSendNotification);
-    }
-
-    for (int i = 0; i < 3; ++i)
-    {
-        labels[i + 3].attachToComponent(&(sliders[i + 3]), false);
-        sliders[i + 3].setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
-        sliders[i + 3].setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 75, 30);
-        sliders[i + 3].setBounds(125, 185 + (i * 140), 100, 100);
-        sliders[i + 3].addListener(this);
-        addAndMakeVisible(sliders[i + 3]);
+        labels[i + 3].attachToComponent(&(rotarySliders[i + 3]), false);
+        rotarySliders[i + 3].setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+        rotarySliders[i + 3].setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 75, 30);
+        rotarySliders[i + 3].setTextBoxIsEditable(false);
+        rotarySliders[i + 3].setColour(juce::Slider::textBoxTextColourId, juce::Colours::black);
+        rotarySliders[i + 3].setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::black);
+        rotarySliders[i + 3].setColour(juce::Slider::thumbColourId, juce::Colours::limegreen);
+        rotarySliders[i + 3].setBounds(525, 185 + i * 140, 100, 100);
+        rotarySliders[i + 3].addListener(this);
+        addAndMakeVisible(rotarySliders[i + 3]);
         addAndMakeVisible(labels[i + 3]);
 
-        labels[i + 6].attachToComponent(&(sliders[i + 6]), false);
-        sliders[i + 6].setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
-        sliders[i + 6].setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 75, 30);
-        sliders[i + 6].setBounds(225, 185 + (i * 140), 100, 100);
-        sliders[i + 6].addListener(this);
-        addAndMakeVisible(sliders[i + 6]);
+        // Fine pitch
+        sliderAttachments[i + 6].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "fineOsc" + juce::String(i + 1), rotarySliders[i + 6]));
+        labels[i + 6].setText("Fine Pitch", juce::NotificationType::dontSendNotification);
+        rotarySliders[i + 6].setTextValueSuffix(" cts");
+
+        labels[i + 6].attachToComponent(&(rotarySliders[i + 6]), false);
+        rotarySliders[i + 6].setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+        rotarySliders[i + 6].setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 75, 30);
+        rotarySliders[i + 6].setTextBoxIsEditable(false);
+        rotarySliders[i + 6].setColour(juce::Slider::textBoxTextColourId, juce::Colours::black);
+        rotarySliders[i + 6].setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::black);
+        rotarySliders[i + 6].setColour(juce::Slider::thumbColourId, juce::Colours::limegreen);
+        rotarySliders[i + 6].setBounds(625, 185 + i * 140, 100, 100);
+        rotarySliders[i + 6].addListener(this);
+        addAndMakeVisible(rotarySliders[i + 6]);
         addAndMakeVisible(labels[i + 6]);
+
+        // Panning
+        sliderAttachments[i + 9].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "panOsc" + juce::String(i + 1), panSliders[i]));
+        labels[i + 9].setText("Panning", juce::NotificationType::dontSendNotification);
 
         labels[i + 9].attachToComponent(&(panSliders[i]), false);
         panSliders[i].setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
         panSliders[i].setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 75, 30);
-        panSliders[i].setBounds(325, 185 + (i * 140), 100, 100);
+        panSliders[i].setTextBoxIsEditable(false);
+        panSliders[i].setBounds(725, 185 + i * 140, 100, 100);
         panSliders[i].addListener(this);
         addAndMakeVisible(panSliders[i]);
         addAndMakeVisible(labels[i + 9]);
     }
 
+    // Set stereo detune and stereo phase offset sliders for the 3 oscillators
+    for (int i = 0; i < 3; ++i)
+    {
+        // Stereo phase offset
+        sliderAttachments[i + 12].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "stereoOffsetOsc" + juce::String(i + 1), offsetSliders[i]));
+        labels[i + 12].setText("Phase Ofs", juce::NotificationType::dontSendNotification);
+
+        labels[i + 12].attachToComponent(&(offsetSliders[i]), false);
+        offsetSliders[i].setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+        offsetSliders[i].setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 75, 30);
+        offsetSliders[i].setTextBoxIsEditable(false);
+        offsetSliders[i].setBounds(325, 185 + i * 140, 80, 100);
+        offsetSliders[i].addListener(this);
+        addAndMakeVisible(offsetSliders[i]);
+        addAndMakeVisible(labels[i + 12]);
+
+        // Stereo detune
+        sliderAttachments[i + 15].reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "stereoDetuneOsc" + juce::String(i + 1), detuneSliders[i]));
+        labels[i + 15].setText("Detune", juce::NotificationType::dontSendNotification);
+
+        labels[i + 15].attachToComponent(&(detuneSliders[i]), false);
+        detuneSliders[i].setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+        detuneSliders[i].setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 75, 30);
+        detuneSliders[i].setTextBoxIsEditable(false);
+        detuneSliders[i].setBounds(425, 185 + i * 140, 80, 100);
+        detuneSliders[i].addListener(this);
+        addAndMakeVisible(detuneSliders[i]);
+        addAndMakeVisible(labels[i + 15]);
+    }
+
+    // Set the wavetable radio buttons for the 3 oscillators
+    auto stringWtArray = juce::StringArray("sin", "square", "roundsaw", "triangle", "sawtooth", "noise");
+
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 6; ++j)
+        {
+            auto parameterId = stringWtArray[j] + "Osc" + juce::String(i + 1);
+            buttonAttachments[i * 6 + j].reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(valueTreeState, parameterId, wavetableButtons[i * 6 + j]));
+            wavetableButtons[i * 6 + j].setWavetable(j);
+            wavetableButtons[i * 6 + j].setClickingTogglesState(true);
+            wavetableButtons[i * 6 + j].setRadioGroupId(i + 1, juce::NotificationType::sendNotification);
+            wavetableButtons[i * 6 + j].addListener(this);
+            wavetableButtons[i * 6 + j].setBounds(100 + int(j % 3) * 60 , 175 + int(j / 3) * 60 + i * 140, 50, 50);
+            addAndMakeVisible(wavetableButtons[i * 6 + j]);
+        }
+
+        wavetableButtons[i * 6].setToggleState(true, juce::NotificationType::sendNotification);
+    }
+
+    // Set minor graphical details
+    for (int i = 0; i < 3; ++i)
+    {
+        oscLabels[i].setText(juce::String(i + 1), juce::NotificationType::dontSendNotification);
+        oscLabels[i].setFont(juce::Font(50.0, 1));
+        oscLabels[i].setColour(juce::Label::outlineColourId, blazeorange);
+        oscLabels[i].setColour(juce::Label::textColourId, blazeorange);
+        oscLabels[i].setBounds(25, 205 + i * 140, 50, 50);
+        addAndMakeVisible(oscLabels[i]);
+    }
+
     // Set size of the main window
-    setSize (550, 620);
+    setSize (950, 620);
 
     setRepaintsOnMouseActivity(true);
 }
@@ -104,9 +179,10 @@ _3xOsc_ReAudioProcessorEditor::~_3xOsc_ReAudioProcessorEditor()
 void _3xOsc_ReAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    //g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll(slategray);
 
-    g.setColour (juce::Colours::white);
+    g.setColour (juce::Colours::black);
     g.setFont (15.0f);
 }
 
@@ -118,5 +194,15 @@ void _3xOsc_ReAudioProcessorEditor::resized()
 
 void _3xOsc_ReAudioProcessorEditor::sliderValueChanged(juce::Slider* slider) {
     slider->repaint();
+    audioProcessor.updateValue();
+}
+
+void _3xOsc_ReAudioProcessorEditor::buttonClicked(juce::Button* button)
+{
+    button->repaint();
+}
+
+void _3xOsc_ReAudioProcessorEditor::buttonStateChanged(juce::Button* button)
+{
     audioProcessor.updateValue();
 }

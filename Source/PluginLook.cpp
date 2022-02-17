@@ -9,8 +9,14 @@
 */
 
 #include "PluginLook.h"
+#include "PanSlider.h"
+#include "StereoSlider.h"
 
 PluginLook::PluginLook()
 {
-    setColour(juce::Slider::thumbColourId, juce::Colours::darkorange);
+    setColour(juce::Slider::thumbColourId, blazeorange);
+    setColour(juce::Label::textColourId, juce::Colours::black);
+
+    setColour(juce::Slider::textBoxTextColourId, juce::Colours::black);
+    setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::black);
 }

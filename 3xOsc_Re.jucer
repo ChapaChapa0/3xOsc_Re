@@ -5,11 +5,42 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="MqAJWw" name="3xOsc_Re">
     <GROUP id="{EB8AF7D5-F02F-0F1A-80E8-1C54B6B356AE}" name="Source">
+      <GROUP id="{E1FD8A7C-5875-B676-88EA-BB0299EB6A06}" name="ImagesData">
+        <FILE id="ev5Jpg" name="WT_noise_off.png" compile="0" resource="1"
+              file="Images/WT_noise_off.png"/>
+        <FILE id="cUE5AS" name="WT_noise_on.png" compile="0" resource="1" file="Images/WT_noise_on.png"/>
+        <FILE id="HvYlqX" name="WT_roundsaw_off.png" compile="0" resource="1"
+              file="Images/WT_roundsaw_off.png"/>
+        <FILE id="DCoGqB" name="WT_roundsaw_on.png" compile="0" resource="1"
+              file="Images/WT_roundsaw_on.png"/>
+        <FILE id="rWLlej" name="WT_sawtooth_off.png" compile="0" resource="1"
+              file="Images/WT_sawtooth_off.png"/>
+        <FILE id="BnRdoN" name="WT_sawtooth_on.png" compile="0" resource="1"
+              file="Images/WT_sawtooth_on.png"/>
+        <FILE id="kVQauA" name="WT_sinus_off.png" compile="0" resource="1"
+              file="Images/WT_sinus_off.png"/>
+        <FILE id="VVHKxb" name="WT_sinus_on.png" compile="0" resource="1" file="Images/WT_sinus_on.png"/>
+        <FILE id="hqk3WU" name="WT_square_off.png" compile="0" resource="1"
+              file="Images/WT_square_off.png"/>
+        <FILE id="MUanFN" name="WT_square_on.png" compile="0" resource="1"
+              file="Images/WT_square_on.png"/>
+        <FILE id="BDpavI" name="WT_triangle_off.png" compile="0" resource="1"
+              file="Images/WT_triangle_off.png"/>
+        <FILE id="b3b7sT" name="WT_triangle_on.png" compile="0" resource="1"
+              file="Images/WT_triangle_on.png"/>
+      </GROUP>
       <GROUP id="{0D09E33F-E988-3E47-ABA6-E28A4B418A0E}" name="GUI">
         <FILE id="WMrDPq" name="PanSlider.cpp" compile="1" resource="0" file="Source/PanSlider.cpp"/>
         <FILE id="enchW0" name="PanSlider.h" compile="0" resource="0" file="Source/PanSlider.h"/>
         <FILE id="PAOU3o" name="PluginLook.cpp" compile="1" resource="0" file="Source/PluginLook.cpp"/>
         <FILE id="CP5NLm" name="PluginLook.h" compile="0" resource="0" file="Source/PluginLook.h"/>
+        <FILE id="yP24eX" name="StereoSlider.cpp" compile="1" resource="0"
+              file="Source/StereoSlider.cpp"/>
+        <FILE id="iVfqX9" name="StereoSlider.h" compile="0" resource="0" file="Source/StereoSlider.h"/>
+        <FILE id="SQGZmR" name="WavetableButton.cpp" compile="1" resource="0"
+              file="Source/WavetableButton.cpp"/>
+        <FILE id="BTtkx6" name="WavetableButton.h" compile="0" resource="0"
+              file="Source/WavetableButton.h"/>
       </GROUP>
       <FILE id="ludbgM" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

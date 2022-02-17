@@ -12,11 +12,13 @@
 #include "PluginProcessor.h"
 #include "PluginLook.h"
 #include "PanSlider.h"
+#include "StereoSlider.h"
+#include "WavetableButton.h"
 
 //==============================================================================
 /**
 */
-class _3xOsc_ReAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Slider::Listener
+class _3xOsc_ReAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Slider::Listener, public juce::Button::Listener
 {
 public:
     _3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProcessor&, juce::AudioProcessorValueTreeState&);
@@ -26,6 +28,12 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
     virtual void sliderValueChanged(juce::Slider* slider) override;
+    virtual void buttonClicked(juce::Button* button) override;
+    virtual void buttonStateChanged(juce::Button* button) override;
+
+    juce::Colour blazeorange = juce::Colour(255, 130, 0);
+    juce::Colour coolgray = juce:: Colour(140, 146, 172);
+    juce::Colour slategray = juce::Colour(118, 134, 146);
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -34,10 +42,15 @@ private:
     juce::AudioProcessorValueTreeState& valueTreeState;
     juce::MidiKeyboardComponent keyboardComponent;
 
-    juce::Slider sliders[15];
+    WavetableButton wavetableButtons[18];
+    StereoOffsetSlider offsetSliders[3];
+    StereoDetuneSlider detuneSliders[3];
+    juce::Slider rotarySliders[9];
     PanSlider panSliders[3];
-    juce::Label labels[15];
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attachments[15];
+    juce::Label labels[18];
+    juce::Label oscLabels[3];
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> sliderAttachments[18];
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> buttonAttachments[18];
 
     PluginLook threeOscLook;
 

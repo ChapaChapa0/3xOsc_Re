@@ -13,6 +13,7 @@
 
 #define NUM_SAMPLES 512
 
+
 struct WavetableVoice : public juce::SynthesiserVoice
 {
     WavetableVoice(juce::AudioProcessorValueTreeState&);
@@ -34,9 +35,10 @@ struct WavetableVoice : public juce::SynthesiserVoice
 private:
     template <typename FloatType>
     void processBlock(juce::AudioBuffer<FloatType>&, int, int);
-    juce::StringRef strs[15] = 
+    juce::StringRef strs[36] = 
     {
         juce::StringRef("masterVolume"),
+
         juce::StringRef("levelOsc2"),
         juce::StringRef("levelOsc3"),
 
@@ -52,25 +54,55 @@ private:
         juce::StringRef("panOsc2"),
         juce::StringRef("panOsc3"),
 
-        juce::StringRef("wavetableOsc1"),
-        juce::StringRef("wavetableOsc2"),
-        juce::StringRef("wavetableOsc3"),
+        juce::StringRef("stereoOffsetOsc1"),
+        juce::StringRef("stereoOffsetOsc2"),
+        juce::StringRef("stereoOffsetOsc3"),
+
+        juce::StringRef("stereoDetuneOsc1"),
+        juce::StringRef("stereoDetuneOsc2"),
+        juce::StringRef("stereoDetuneOsc3"),
+
+        juce::StringRef("sinOsc1"),
+        juce::StringRef("squareOsc1"),
+        juce::StringRef("roundsawOsc1"),
+        juce::StringRef("triangleOsc1"),
+        juce::StringRef("sawtoothOsc1"),
+        juce::StringRef("noiseOsc1"),
+
+        juce::StringRef("sinOsc2"),
+        juce::StringRef("squareOsc2"),
+        juce::StringRef("roundsawOsc2"),
+        juce::StringRef("triangleOsc2"),
+        juce::StringRef("sawtoothOsc2"),
+        juce::StringRef("noiseOsc2"),
+
+        juce::StringRef("sinOsc3"),
+        juce::StringRef("squareOsc3"),
+        juce::StringRef("roundsawOsc3"),
+        juce::StringRef("triangleOsc3"),
+        juce::StringRef("sawtoothOsc3"),
+        juce::StringRef("noiseOsc3"),
+
     };
 
     juce::Random random;
-    float currentIndex[3] = { 0.0f, 0.0f, 0.0f };
-    float tableDelta[3] = { 0.0f, 0.0f, 0.0f };
+
+    float currentIndex[6] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+    float tableDelta[6] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
     float masterVolume = 100.0f;
     float levelOsc[3] = { 100.0f, 50.0f, 25.0f };
     float coarseOsc[3] = { 24.0f, 12.0f, 0.0f };
     float fineOsc[3] = { 0.0f, 0.0f, 0.0f };
     float panOsc[3] = { 0.0f, 0.0f, 0.0f };
+    float stereoOffsetOsc[3] = { 0.0f, 0.0f, 0.0f };
+    float stereoDetuneOsc[3] = { 0.0f, 0.0f, 0.0f };
+    juce::Array<float> wavetableButtonsOsc1 = { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    juce::Array<float> wavetableButtonsOsc2 = { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    juce::Array<float> wavetableButtonsOsc3 = { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     int wavetableOsc[3] = { 0, 0, 0 };
 
     double levelMidiNote = 0.0, tailOff = 0.0;
     juce::AudioProcessorValueTreeState* params;
-
-    bool noise = false;
     juce::AudioSampleBuffer wavetables;
 };

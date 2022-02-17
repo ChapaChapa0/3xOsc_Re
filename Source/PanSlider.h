@@ -10,10 +10,17 @@
 
 #pragma once
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "PluginLook.h"
 
 class PanSlider : public juce::Slider
 {
 public:
     PanSlider();
+    ~PanSlider();
     virtual juce::String getTextFromValue(double) override;
+
+    juce::Colour blazeorange = juce::Colour(255, 130, 0);
+
+private:
+    PluginLook threeOscLook;
 };

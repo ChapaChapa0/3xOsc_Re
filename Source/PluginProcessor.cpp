@@ -11,6 +11,8 @@
 #include "WavetableVoice.h"
 #include "WavetableSound.h"
 
+#define NUM_VOICES 8
+
 //==============================================================================
 _3xOsc_ReAudioProcessor::_3xOsc_ReAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -25,6 +27,7 @@ _3xOsc_ReAudioProcessor::_3xOsc_ReAudioProcessor()
                         parameters(*this, nullptr, juce::Identifier("3xOsc_Re"),
                            {
                            std::make_unique<juce::AudioParameterFloat>("masterVolume", "Master Volume", juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 100.f),
+
                            std::make_unique<juce::AudioParameterFloat>("levelOsc2", "Level Osc 2", juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 50.f),
                            std::make_unique<juce::AudioParameterFloat>("levelOsc3", "Level Osc 3", juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 25.f),
 
@@ -40,13 +43,42 @@ _3xOsc_ReAudioProcessor::_3xOsc_ReAudioProcessor()
                            std::make_unique<juce::AudioParameterFloat>("panOsc2", "Panning Osc 2", juce::NormalisableRange<float>(-100.0f, 100.0f, 1.0f), 0.0f),
                            std::make_unique<juce::AudioParameterFloat>("panOsc3", "Panning Osc 3", juce::NormalisableRange<float>(-100.0f, 100.0f, 1.0f), 0.0f),
 
-                           std::make_unique<juce::AudioParameterChoice>("wavetableOsc1", "Wavetable Osc 1", juce::StringArray("Sine","Triangle","Square","Sawtooth","Noise"), 1),
-                           std::make_unique<juce::AudioParameterChoice>("wavetableOsc2", "Wavetable Osc 2", juce::StringArray("Sine","Triangle","Square","Sawtooth","Noise"), 1),
-                           std::make_unique<juce::AudioParameterChoice>("wavetableOsc3", "Wavetable Osc 3", juce::StringArray("Sine","Triangle","Square","Sawtooth","Noise"), 1),
+                           std::make_unique<juce::AudioParameterInt>("stereoOffsetOsc1", "Stereo Phase Offset Osc 1", -100, 100, 0),
+                           std::make_unique<juce::AudioParameterInt>("stereoOffsetOsc2", "Stereo Phase Offset Osc 2", -100, 100, 0),
+                           std::make_unique<juce::AudioParameterInt>("stereoOffsetOsc3", "Stereo Phase Offset Osc 3", -100, 100, 0),
+
+                           std::make_unique<juce::AudioParameterInt>("stereoDetuneOsc1", "Stereo Detune Osc 1", -50, 50, 0),
+                           std::make_unique<juce::AudioParameterInt>("stereoDetuneOsc2", "Stereo Detune Osc 2", -50, 50, 0),
+                           std::make_unique<juce::AudioParameterInt>("stereoDetuneOsc3", "Stereo Detune Osc 3", -50, 50, 0),
+
+                           std::make_unique<juce::AudioParameterBool>("sinOsc1", "Sinus Osc 1", true),
+                           std::make_unique<juce::AudioParameterBool>("sinOsc2", "Sinus Osc 2", true),
+                           std::make_unique<juce::AudioParameterBool>("sinOsc3", "Sinus Osc 3", true),
+
+                           std::make_unique<juce::AudioParameterBool>("squareOsc1", "Square Osc 1", false),
+                           std::make_unique<juce::AudioParameterBool>("squareOsc2", "Square Osc 2", false),
+                           std::make_unique<juce::AudioParameterBool>("squareOsc3", "Square Osc 3", false),
+
+                           std::make_unique<juce::AudioParameterBool>("roundsawOsc1", "RoundSaw Osc 1", false),
+                           std::make_unique<juce::AudioParameterBool>("roundsawOsc2", "RoundSaw Osc 2", false),
+                           std::make_unique<juce::AudioParameterBool>("roundsawOsc3", "RoundSaw Osc 3", false),
+
+                           std::make_unique<juce::AudioParameterBool>("triangleOsc1", "Triangle Osc 1", false),
+                           std::make_unique<juce::AudioParameterBool>("triangleOsc2", "Triangle Osc 2", false),
+                           std::make_unique<juce::AudioParameterBool>("triangleOsc3", "Triangle Osc 3", false),
+
+                           std::make_unique<juce::AudioParameterBool>("sawtoothOsc1", "Sawtooth Osc 1", false),
+                           std::make_unique<juce::AudioParameterBool>("sawtoothOsc2", "Sawtooth Osc 2", false),
+                           std::make_unique<juce::AudioParameterBool>("sawtoothOsc3", "Sawtooth Osc 3", false),
+
+                           std::make_unique<juce::AudioParameterBool>("noiseOsc1", "Noise Osc 1", false),
+                           std::make_unique<juce::AudioParameterBool>("noiseOsc2", "Noise Osc 2", false),
+                           std::make_unique<juce::AudioParameterBool>("noiseOsc3", "Noise Osc 3", false),
+
                            })
 #endif
 {
-    for (auto i = 0; i < 4; ++i)
+    for (auto i = 0; i < NUM_VOICES; ++i)
         synth.addVoice(new WavetableVoice(parameters));
 
     setUsingWavetableSound();
@@ -177,7 +209,7 @@ void _3xOsc_ReAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 }
 
 void _3xOsc_ReAudioProcessor::updateValue() {
-    for (int i = 0; i < 4; i++) 
+    for (int i = 0; i < NUM_VOICES; i++) 
     {
         WavetableVoice* voice = (WavetableVoice*)(synth.getVoice(i));
         voice->updateValue();

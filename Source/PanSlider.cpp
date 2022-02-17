@@ -9,9 +9,17 @@
 */
 
 #include "PanSlider.h"
+#include "PluginLook.h"
 
 PanSlider::PanSlider()
 {
+    setLookAndFeel(&threeOscLook);
+    setColour(juce::Slider::thumbColourId, blazeorange);
+}
+
+PanSlider::~PanSlider()
+{
+    setLookAndFeel(nullptr);
 }
 
 juce::String PanSlider::getTextFromValue(double value)

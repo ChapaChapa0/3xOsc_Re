@@ -1,7 +1,7 @@
 # 3xOsc_Re
  Remake on JUCE of the 3x Osc Plugin from Image-Line
 
-![dddd ](Captures/InitPreset.png)
+![dddd ](Captures/InitPreset.PNG)
 
 For each oscillator you can control:
 

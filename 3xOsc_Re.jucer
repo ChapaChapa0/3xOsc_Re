@@ -30,8 +30,6 @@
               file="Images/WT_triangle_on.png"/>
       </GROUP>
       <GROUP id="{0D09E33F-E988-3E47-ABA6-E28A4B418A0E}" name="GUI">
-        <FILE id="zUM1fL" name="PageButton.cpp" compile="1" resource="0" file="Source/PageButton.cpp"/>
-        <FILE id="aHwXe9" name="PageButton.h" compile="0" resource="0" file="Source/PageButton.h"/>
         <FILE id="WMrDPq" name="PanSlider.cpp" compile="1" resource="0" file="Source/PanSlider.cpp"/>
         <FILE id="enchW0" name="PanSlider.h" compile="0" resource="0" file="Source/PanSlider.h"/>
         <FILE id="PAOU3o" name="PluginLook.cpp" compile="1" resource="0" file="Source/PluginLook.cpp"/>

@@ -9,7 +9,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "PluginLook.h"
-#include "PageButton.h"
 
 //==============================================================================
 _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProcessor& p, juce::AudioProcessorValueTreeState& vts)
@@ -149,20 +148,15 @@ _3xOsc_ReAudioProcessorEditor::_3xOsc_ReAudioProcessorEditor (_3xOsc_ReAudioProc
         oscLabels[i].setBounds(25, 205 + i * 140, 50, 50);
     }
 
-    // Set page buttons
-    pagesButton[0].setBounds(45, 45, 100, 100);
-    pagesButton[0].setRadioGroupId(1000);
-    pagesButton[0].onClick = [this] { updateToggleState(&pagesButton[0], "Main");   };
-
-    pagesButton[1].setBounds(145, 45, 100, 100);
-    pagesButton[1].setRadioGroupId(1000);
-    pagesButton[1].onClick = [this] { updateToggleState(&pagesButton[1], "Second"); };
-
+    // Set midi keyboard
+    keyboardComponent.setBounds(25, 600, 900, 100);
+    keyboardComponent.setKeyPressBaseOctave(5);
+    
     // Make visible components of the main page
     makeMainPageVisible();
 
     // Set size of the main window
-    setSize (950, 620);
+    setSize (950, 725);
 
     setRepaintsOnMouseActivity(true);
 }
@@ -176,16 +170,6 @@ _3xOsc_ReAudioProcessorEditor::~_3xOsc_ReAudioProcessorEditor()
 
 void _3xOsc_ReAudioProcessorEditor::makeMainPageVisible()
 {
-
-    // Hide Second Page
-    for (int i = 0; i < getNumChildComponents(); ++i)
-    {
-        removeChildComponent(i);
-    }
-
-    // Make Main Page Visible
-    //addAndMakeVisible(pagesButton[0]);
-    //addAndMakeVisible(pagesButton[1]);
 
     for (int i = 0; i < 18; ++i)
     {
@@ -205,23 +189,8 @@ void _3xOsc_ReAudioProcessorEditor::makeMainPageVisible()
         addAndMakeVisible(panSliders[i]);
         addAndMakeVisible(oscLabels[i]);
     }
-}
 
-void _3xOsc_ReAudioProcessorEditor::makeSecondPageVisible()
-{
-
-    // Hide Main Page
-    for (int i = 0; i < getNumChildComponents(); ++i)
-    {
-        removeChildComponent(i);
-    }
-
-    // Make Second Page Visible
-    //addAndMakeVisible(pagesButton[0]);
-    //addAndMakeVisible(pagesButton[1]);
-
-    addAndMakeVisible(rotarySliders[0]);
-    addAndMakeVisible(labels[0]);
+    addAndMakeVisible(keyboardComponent);
 }
 
 //==============================================================================
@@ -258,15 +227,9 @@ void _3xOsc_ReAudioProcessorEditor::buttonStateChanged(juce::Button* button)
     audioProcessor.updateValue();
 }
 
-void _3xOsc_ReAudioProcessorEditor::updateToggleState(juce::Button* button, juce::String name)
+//==============================================================================
+void _3xOsc_ReAudioProcessorEditor::timerCallback()
 {
-    auto state = button->getToggleState();
-    if (name == "Main" && state)
-    {
-        //makeMainPageVisible();
-    }
-    else if (name == "Second" && state)
-    {
-        //makeSecondPageVisible();
-    }
+    keyboardComponent.grabKeyboardFocus();
+    stopTimer();
 }

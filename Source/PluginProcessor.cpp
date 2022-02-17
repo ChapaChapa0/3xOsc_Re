@@ -24,7 +24,7 @@ _3xOsc_ReAudioProcessor::_3xOsc_ReAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ), 
-                        parameters(*this, nullptr, juce::Identifier("3xOsc_Re"),
+                        parameters(*this, nullptr, juce::Identifier("_3xOsc_Re"),
                            {
                            std::make_unique<juce::AudioParameterFloat>("masterVolume", "Master Volume", juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 100.f),
 
@@ -234,9 +234,9 @@ void _3xOsc_ReAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 
-    //auto state = parameters.copyState();
-    //std::unique_ptr<juce::XmlElement> xml(state.createXml());
-    //copyXmlToBinary(*xml, destData);
+    auto state = parameters.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    copyXmlToBinary(*xml, destData);
 }
 
 void _3xOsc_ReAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
@@ -244,10 +244,10 @@ void _3xOsc_ReAudioProcessor::setStateInformation (const void* data, int sizeInB
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
 
-    //std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
-    //if (xmlState.get() != nullptr)
-    //    if (xmlState->hasTagName(parameters.state.getType()))
-    //        parameters.replaceState(juce::ValueTree::fromXml(*xmlState));
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+    if (xmlState.get() != nullptr)
+        if (xmlState->hasTagName(parameters.state.getType()))
+            parameters.replaceState(juce::ValueTree::fromXml(*xmlState));
 }
 
 //==============================================================================

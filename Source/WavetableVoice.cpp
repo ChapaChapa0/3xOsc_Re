@@ -211,8 +211,8 @@ void WavetableVoice::generateWavetables()
     harmonicsWeights.add({ 1.0f, 0.333f, 0.2f, 0.142f, 0.111f, 0.091f, 0.077f });
 
     // RoundSaw Table
-    harmonics.add({ 1, 3, 5, 7, 9, 11, 13 });
-    harmonicsWeights.add({ 1.0f, 0.333f, 0.2f, 0.142f, 0.111f, 0.091f, 0.077f });
+    harmonics.add({ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 });
+    harmonicsWeights.add({ 1.0f, 0.25f, 0.333f, 0.125f, 0.2f, 0.088f, 0.142f, 0.062f, 0.111f, 0.05f, 0.091f, 0.042f, 0.077f });
 
     // Triangle Table
     harmonics.add({ 1, 3, 5, 7, 9, 11, 13 });

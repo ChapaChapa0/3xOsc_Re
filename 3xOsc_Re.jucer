@@ -2,7 +2,9 @@
 
 <JUCERPROJECT id="ReKjog" name="3xOsc_Re" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
-              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
+              pluginCharacteristicsValue="pluginEditorRequiresKeys,pluginIsSynth,pluginWantsMidiIn"
+              companyName="ChapaFactory" companyWebsite="https://github.com/ChapaChapa0"
+              companyEmail="chable.paul@gmail.com" userNotes="Hope you enjoy &lt;3">
   <MAINGROUP id="MqAJWw" name="3xOsc_Re">
     <GROUP id="{EB8AF7D5-F02F-0F1A-80E8-1C54B6B356AE}" name="Source">
       <GROUP id="{E1FD8A7C-5875-B676-88EA-BB0299EB6A06}" name="ImagesData">

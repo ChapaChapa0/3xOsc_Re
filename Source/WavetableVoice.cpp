@@ -121,7 +121,7 @@ inline void WavetableVoice::processBlock(juce::AudioBuffer<FloatType>& outputBuf
 
                 currentSampleLeft_i = (float)(valueL0 + fracL * (valueL1 - valueL0)) * levelMidiNote * (levelOsc[i] / 100.0f) * attackEnvelop * ((tailOff > 0.0) ? tailOff : 1.0);
 
-                float updatedTableDeltaL = tableDelta[i] * pow(10.0, ((coarseOsc[i] - 12.0) * 100.0 + fineOsc[i]) / (1200.0 * 3.322038403));
+                float updatedTableDeltaL = tableDelta[i] * pow(10.0, ((coarseOsc[i] - 24.0) * 100.0 + fineOsc[i]) / (1200.0 * 3.322038403));
                 if ((currentIndex[i] += updatedTableDeltaL) > (float)NUM_SAMPLES)
                     currentIndex[i] -= (float)NUM_SAMPLES;
 
@@ -134,9 +134,9 @@ inline void WavetableVoice::processBlock(juce::AudioBuffer<FloatType>& outputBuf
                 auto valueR0 = table[indexR0];
                 auto valueR1 = table[indexR1];
 
-                currentSampleRight_i = (float)(valueR0 + fracR * (valueR1 - valueR0)) * levelMidiNote * (levelOsc[i] / 100.0f) * attackEnvelop *((tailOff > 0.0) ? tailOff : 1.0);
+                currentSampleRight_i = (float)(valueR0 + fracR * (valueR1 - valueR0)) * levelMidiNote * (levelOsc[i] / 100.0f) * attackEnvelop * ((tailOff > 0.0) ? tailOff : 1.0);
 
-                float updatedTableDeltaR = tableDelta[i] * pow(10.0, ((coarseOsc[i] - 12.0) * 100.0 + fineOsc[i] + stereoDetuneOsc[i]) / (1200.0 * 3.322038403));
+                float updatedTableDeltaR = tableDelta[i] * pow(10.0, ((coarseOsc[i] - 24.0) * 100.0 + fineOsc[i] + stereoDetuneOsc[i]) / (1200.0 * 3.322038403));
                 if ((currentIndex[i + 3] += updatedTableDeltaR) > (float)NUM_SAMPLES)
                     currentIndex[i + 3] -= (float)NUM_SAMPLES;
             }

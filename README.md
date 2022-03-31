@@ -3,6 +3,8 @@
 
 ![InitPreset](Captures/InitPreset.PNG)
 
+## How to use it
+
 For each oscillator you can control:
 
 - Oscillator Shape -> you can choose amongst 6 oscillator shapes : sine, square, rounded square, triangle, sawtooth and random (white noise).
@@ -14,3 +16,7 @@ For each oscillator you can control:
 - Mixing Level -> Set the mixing level of the second or third oscillator relatively to the first one.
 
 You also have a Master Volume to control the overall amplitude of the synth.
+
+## Video of demonstration
+
+https://youtu.be/y0blEgaHMsQ
